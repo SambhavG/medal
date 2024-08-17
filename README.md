@@ -1,3 +1,8 @@
+# 3D Olympic Medal Rankings Visualization
+This is a visualization of how every country did in the rankings for Olympic medals based on every possible scheme you could use to rank them (assuming better medals are always better).
+
+Below is readme for the svelte skeleton project I made and built this off of.
+
 # Svelte skeleton
 
 This is a skeleton of a svelte project using my preferred workflow. It includes:
