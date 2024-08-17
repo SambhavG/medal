@@ -10,6 +10,7 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+	import { base } from '$app/paths';
 
 	let canvas: HTMLCanvasElement;
 
@@ -26,7 +27,8 @@
 		GER: { gold: 12, silver: 13, bronze: 8, name: 'Germany', borderColor: 0xf1cb00 }
 	};
 	let levelOfSeparation = 2;
-	let displayTable = true;
+	let tableThreshold = 1200;
+	let displayTable = window.innerWidth > tableThreshold;
 
 	onMount(() => {
 		if (canvas) createScene();
@@ -179,16 +181,13 @@
 
 			// Color is flag color
 			let material = new THREE.MeshBasicMaterial({
-				map: new THREE.TextureLoader().load(`/flags/${country}.png`),
+				map: new THREE.TextureLoader().load(`${base}/flags/${country}.png`),
 				wireframe: true,
 				transparent: true,
 				opacity: 0.5
 			});
 			let mesh = new THREE.Mesh(geometry, material);
 			scene.add(mesh);
-
-			let edgesGeometry = new EdgesGeometry(geometry);
-			let positions = edgesGeometry.attributes.position.array;
 
 			//Create a dummy ring of positions for the edge of the plane
 			let topRow = [];
@@ -349,7 +348,7 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
-			if (window.innerWidth < 1200) {
+			if (window.innerWidth < tableThreshold) {
 				displayTable = false;
 			} else {
 				displayTable = true;
@@ -363,25 +362,27 @@
 <!-- //position absolute so it's full screen and behind the input -->
 <canvas bind:this={canvas} class="absolute inset-0"></canvas>
 
-<div class="absolute top-10 left-10 mx-auto text-white">
-	<h1 class="text-4xl text-center">Olympic Medal Standings</h1>
-	<p class="text-center">Drag and zoom to move</p>
-	<p class="text-center">Falloff curve puts 4-2-1 point system in the center</p>
-	<div class="p-4 flex flex-col justify-normal">
-		<p class="text-center">Separation</p>
+{#if displayTable}
+	<div class="absolute top-10 left-10 mx-auto text-white">
+		<h1 class="text-4xl text-center">Olympic Medal Standings</h1>
+		<p class="text-center">Drag and zoom to move</p>
+		<p class="text-center">Falloff curve puts 4-2-1 point system in the center</p>
+		<div class="p-4 flex flex-col justify-normal">
+			<p class="text-center">Separation</p>
 
-		<input
-			type="range"
-			step=".1"
-			min=".1"
-			max="4"
-			bind:value={levelOfSeparation}
-			on:input={() => {
-				createScene();
-			}}
-		/>
+			<input
+				type="range"
+				step=".1"
+				min=".1"
+				max="4"
+				bind:value={levelOfSeparation}
+				on:input={() => {
+					createScene();
+				}}
+			/>
+		</div>
 	</div>
-</div>
+{/if}
 
 {#if medalCounts && displayTable}
 	<div class="absolute bottom-10 right-10 bg-black bg-opacity-50 text-white p-4 rounded-lg">
@@ -400,7 +401,11 @@
 				{#each Object.entries(medalCounts) as [country, data]}
 					<tr>
 						<td class="px-4 py-2">
-							<img src="/flags/{country}.png" alt="{data.name} flag" class="w-8 h-4 object-cover" />
+							<img
+								src="{base}/flags/{country}.png"
+								alt="{data.name} flag"
+								class="w-8 h-4 object-cover"
+							/>
 						</td>
 						<!-- <td class="px-4 py-2">{data.name}</td> -->
 						<td class="px-4 py-2 text-yellow-400">{data.gold}</td>
