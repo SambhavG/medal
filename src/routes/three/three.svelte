@@ -26,6 +26,7 @@
 		GER: { gold: 12, silver: 13, bronze: 8, name: 'Germany', borderColor: 0xf1cb00 }
 	};
 	let levelOfSeparation = 2;
+	let displayTable = true;
 
 	onMount(() => {
 		if (canvas) createScene();
@@ -348,6 +349,11 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
+			if (window.innerWidth < 1200) {
+				displayTable = false;
+			} else {
+				displayTable = true;
+			}
 		};
 
 		window.addEventListener('resize', resize);
@@ -377,20 +383,20 @@
 	</div>
 </div>
 
-<div class="absolute bottom-10 right-10 bg-black bg-opacity-50 text-white p-4 rounded-lg">
-	<table class="table-auto">
-		<thead>
-			<tr>
-				<th class="px-4 py-2"></th>
-				<!-- <th class="px-4 py-2"></th> -->
-				<th class="px-4 py-2 text-yellow-400">G</th>
-				<th class="px-4 py-2 text-gray-300">S</th>
-				<th class="px-4 py-2 text-orange-400">B</th>
-				<th class="px-4 py-2">T</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#if medalCounts}
+{#if medalCounts && displayTable}
+	<div class="absolute bottom-10 right-10 bg-black bg-opacity-50 text-white p-4 rounded-lg">
+		<table class="table-auto">
+			<thead>
+				<tr>
+					<th class="px-4 py-2"></th>
+					<!-- <th class="px-4 py-2"></th> -->
+					<th class="px-4 py-2 text-yellow-400">G</th>
+					<th class="px-4 py-2 text-gray-300">S</th>
+					<th class="px-4 py-2 text-orange-400">B</th>
+					<th class="px-4 py-2">T</th>
+				</tr>
+			</thead>
+			<tbody>
 				{#each Object.entries(medalCounts) as [country, data]}
 					<tr>
 						<td class="px-4 py-2">
@@ -403,10 +409,10 @@
 						<td class="px-4 py-2">{data.gold + data.silver + data.bronze}</td>
 					</tr>
 				{/each}
-			{/if}
-		</tbody>
-	</table>
-</div>
+			</tbody>
+		</table>
+	</div>
+{/if}
 
 <style>
 	table {
